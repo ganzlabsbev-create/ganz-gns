@@ -7,7 +7,7 @@
 
 import { importPublicKeyFromString } from "./identity";
 import { canonicalPayload } from "./signing";
-import { base64UrlToBytes, utf8ToBytes } from "./codec";
+import { base64UrlToBytes, utf8ToBytes, toArrayBuffer } from "./codec";
 import type { NameRecord, VerificationResult } from "@/types";
 
 const NAME_RE = /^[a-z0-9-]{1,32}\.ganz$/;
@@ -67,8 +67,8 @@ export async function verifyRecord(record: NameRecord): Promise<VerificationResu
     signatureValid = await subtle.verify(
       { name: "ECDSA", hash: "SHA-256" },
       publicKey,
-      signatureBytes,
-      payload
+      toArrayBuffer(signatureBytes),
+      toArrayBuffer(payload)
     );
     // If verify() succeeded against ownerPublicKey specifically, the owner match
     // and the signature validity are the same check by construction.

@@ -5,7 +5,7 @@
 // canonical payload the same way, or valid records will fail to verify.
 
 import { importPrivateKey } from "./identity";
-import { bytesToBase64Url, utf8ToBytes } from "./codec";
+import { bytesToBase64Url, utf8ToBytes, toArrayBuffer } from "./codec";
 import type { NameRecord } from "@/types";
 
 /**
@@ -40,7 +40,7 @@ export async function signRecord(
   const signatureBytes = await subtle.sign(
     { name: "ECDSA", hash: "SHA-256" },
     privateKey,
-    payload
+    toArrayBuffer(payload)
   );
 
   return bytesToBase64Url(new Uint8Array(signatureBytes));

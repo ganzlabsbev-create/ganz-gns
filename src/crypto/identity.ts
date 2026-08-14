@@ -62,7 +62,7 @@ export async function importPrivateKey(jwk: JsonWebKey): Promise<CryptoKey> {
 /** Re-imports a public CryptoKey from raw bytes decoded out of a "GNS-PUB-..." string. */
 export async function importPublicKeyFromString(publicKey: string): Promise<CryptoKey> {
   const subtle = getSubtle();
-  const { base64UrlToBytes } = await import("./codec");
+  const { base64UrlToBytes, toArrayBuffer } = await import("./codec");
   const raw = base64UrlToBytes(decodePublicKeyPrefix(publicKey));
-  return subtle.importKey("raw", raw, ALGORITHM, false, ["verify"]);
+  return subtle.importKey("raw", toArrayBuffer(raw), ALGORITHM, false, ["verify"]);
 }

@@ -32,3 +32,14 @@ export function base64UrlToBytes(base64url: string): Uint8Array {
 export function utf8ToBytes(str: string): Uint8Array {
   return new TextEncoder().encode(str);
 }
+
+/**
+ * Converts any Uint8Array view into a plain ArrayBuffer suitable for the
+ * Web Crypto API's BufferSource parameters. Newer TypeScript DOM typings
+ * require ArrayBuffer specifically (not the broader ArrayBufferLike that
+ * Uint8Array's .buffer is typed as), so call this at every SubtleCrypto
+ * call site that takes raw bytes.
+ */
+export function toArrayBuffer(bytes: Uint8Array): ArrayBuffer {
+  return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
+}
