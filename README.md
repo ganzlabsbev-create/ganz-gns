@@ -64,23 +64,38 @@ Open http://localhost:3000
 
 ---
 
-## 3. Database — Vercel Postgres (free tier)
+## 3. Database — Postgres via Vercel Marketplace (Neon)
+
+Vercel's own "Vercel Postgres" product has been discontinued. Postgres on
+Vercel is now provided through the **Vercel Marketplace**, backed by Neon
+(this is what the `npm warn deprecated @vercel/postgres` message you may
+have seen was pointing at — this project already uses the current
+`@neondatabase/serverless` driver instead).
 
 1. Push this repo to GitHub, then import it into a new Vercel project.
-2. In the Vercel dashboard: **Storage → Create Database → Postgres**
-   (the free "Hobby" tier is enough for this prototype) and connect it to
-   your project.
-3. Vercel injects `POSTGRES_URL` and friends into your project's
-   Environment Variables automatically — you don't need to copy anything
-   by hand for the deployed app.
-4. For local development, run `vercel env pull .env.local` (requires the
+2. In the Vercel dashboard: **Storage → Marketplace Database Storage →
+   Neon** (Neon has a free tier, enough for this prototype) and connect
+   it to your project. If you don't see "Marketplace" under Storage,
+   search "Neon" in the Vercel Marketplace directly and click **Install**,
+   then link it to this project.
+3. On the "Connect a Project" screen, set **Custom Prefix** to `GANZ`
+   (this project's env var naming is already set up to read
+   `GANZ_DATABASE_URL`). This also avoids collisions if the project
+   already has old, unrelated `POSTGRES_*` variables lying around from a
+   previous setup attempt. Tick **Production** and **Preview**, then
+   **Connect**.
+4. Vercel injects `GANZ_DATABASE_URL` into your project automatically —
+   you don't need to copy anything by hand for the deployed app.
+   Redeploy once after connecting it so the new env var is picked up.
+5. For local development, run `vercel env pull .env.local` (requires the
    Vercel CLI: `npm i -g vercel`, then `vercel link`) to pull the same
-   variables down to your machine.
-5. Tables are created automatically on first API call
+   `GANZ_DATABASE_URL` down to your machine.
+6. Tables are created automatically on first API call
    (`ensureSchema()` in `src/lib/db.ts`, `CREATE TABLE IF NOT EXISTS`).
    You do **not** need to run anything manually. If you want to create
    them ahead of time anyway, run `npm run db:init` locally, or paste
-   `scripts/schema.sql` into the Vercel Postgres query editor.
+   `scripts/schema.sql` into the Neon SQL editor (reachable from the
+   Vercel Storage tab via "Open in Neon").
 
 No other paid infrastructure is required. No VPS, no blockchain, no
 cryptocurrency.

@@ -1,14 +1,22 @@
 // scripts/init-db.mjs
 //
 // Optional: manually create tables ahead of time.
-// `npm run db:init` (requires POSTGRES_URL etc. in your environment —
-// pull them with `vercel env pull .env.local` after attaching Postgres
-// storage to your project).
+// `npm run db:init` (requires DATABASE_URL in your environment —
+// pull it with `vercel env pull .env.local` after connecting the Neon
+// Postgres integration to your project).
 //
 // Not required for normal use: the app also calls ensureSchema()
 // automatically the first time any /api/names route runs.
 
-import { sql } from "@vercel/postgres";
+import { neon } from "@neondatabase/serverless";
+
+const url = process.env.GANZ_DATABASE_URL ?? process.env.DATABASE_URL;
+if (!url) {
+  console.error("GANZ_DATABASE_URL (or DATABASE_URL) is not set. Run `vercel env pull .env.local` first, or export it manually.");
+  process.exit(1);
+}
+
+const sql = neon(url);
 
 async function main() {
   await sql`
@@ -39,9 +47,7 @@ async function main() {
   console.log("GanZ GNS schema ready.");
 }
 
-main()
-  .then(() => process.exit(0))
-  .catch((err) => {
-    console.error(err);
-    process.exit(1);
-  });
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
